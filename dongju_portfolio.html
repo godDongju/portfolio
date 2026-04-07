@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>김동주 | 백엔드 · 데이터 인프라 엔지니어</title>
+<style>
+  :root {
+    --accent:#3b82f6;--accent-dim:rgba(59,130,246,0.12);--accent-border:rgba(59,130,246,0.3);
+    --bg:#080b10;--bg2:#0e1117;--bg3:#141920;
+    --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+    --text:#f0f4ff;--text2:#8892a4;--text3:#4a5568;
+    --green:#10b981;--green-dim:rgba(16,185,129,0.1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;}
+  ::-webkit-scrollbar{width:4px;}
+  ::-webkit-scrollbar-track{background:var(--bg);}
+  ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+  /* NAV */
+  #nav-global{
+    position:fixed;top:0;left:0;right:0;z-index:100;height:60px;
+    display:flex;align-items:center;
+    background:rgba(8,11,16,0.85);backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--border);
+    transition:box-shadow .3s;
+  }
+  #nav-global.scrolled{box-shadow:0 4px 32px rgba(0,0,0,.4);}
+  #nav-global .wrap{width:100%;max-width:1100px;margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;}
+  .nav-logo{font-size:15px;font-weight:700;letter-spacing:-.3px;color:var(--text);}
+  .nav-logo span{color:var(--accent);}
+  .nav-links{display:flex;gap:32px;list-style:none;}
+  .nav-links a{font-size:13px;color:var(--text2);text-decoration:none;transition:color .2s;position:relative;padding-bottom:2px;}
+  .nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--accent);transition:width .25s;}
+  .nav-links a:hover{color:var(--text);}
+  .nav-links a:hover::after,.nav-links a.active::after{width:100%;}
+  .nav-links a.active{color:var(--text);}
+  .nav-resume{font-size:13px;font-weight:600;padding:7px 18px;border-radius:8px;border:1px solid var(--border2);color:var(--text);text-decoration:none;transition:all .2s;}
+  .nav-resume:hover{background:var(--bg3);border-color:var(--accent);}
+
+  /* 공통 */
+  .wrap{max-width:1100px;margin:0 auto;padding:0 32px;}
+  section{padding:100px 0;border-bottom:1px solid var(--border);}
+  .sec-chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:99px;padding:4px 14px;margin-bottom:20px;}
+  .sec-title{font-size:clamp(26px,4vw,36px);font-weight:800;letter-spacing:-.5px;margin-bottom:10px;line-height:1.2;}
+  .sec-sub{font-size:15px;color:var(--text2);margin-bottom:52px;}
+  .tag{font-size:11px;color:var(--text2);background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 10px;white-space:nowrap;}
+
+  /* HERO */
+  #hero-main{min-height:100vh;display:flex;align-items:center;padding-top:60px;position:relative;}
+  .hero-noise{position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse 70% 60% at 75% 35%,rgba(59,130,246,0.08) 0%,transparent 70%),
+              radial-gradient(ellipse 50% 40% at 20% 75%,rgba(16,185,129,0.06) 0%,transparent 60%);}
+  .hero-grid{position:absolute;inset:0;pointer-events:none;
+    background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
+    background-size:60px 60px;
+    -webkit-mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%);
+    mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%);}
+  .hero-inner{position:relative;z-index:1;}
+  .hero-avail{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--green);background:var(--green-dim);border:1px solid rgba(16,185,129,.2);border-radius:99px;padding:5px 14px;margin-bottom:28px;}
+  .hero-avail-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+  .hero-h1{font-size:clamp(38px,6vw,68px);font-weight:900;letter-spacing:-2px;line-height:1.07;margin-bottom:20px;}
+  .hero-h1 .hl{background:linear-gradient(135deg,#60a5fa 0%,#3b82f6 50%,#818cf8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  /* Typewriter */
+  .tw-wrap{display:inline-block;position:relative;}
+  .tw-text{color:var(--text);}
+  .tw-cursor{display:inline-block;width:3px;height:.85em;background:var(--accent);margin-left:3px;vertical-align:middle;animation:blink .7s step-end infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+  .hero-desc{font-size:17px;color:var(--text2);max-width:520px;margin-bottom:44px;line-height:1.75;}
+  .hero-metrics{display:flex;gap:0;margin-bottom:44px;border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--bg2);}
+  .metric{flex:1;padding:22px 24px;border-right:1px solid var(--border);}
+  .metric:last-child{border-right:none;}
+  .metric-val{font-size:28px;font-weight:900;letter-spacing:-1px;color:var(--text);line-height:1;}
+  .metric-val .unit{font-size:16px;font-weight:600;color:var(--accent);}
+  .metric-lbl{font-size:12px;color:var(--text3);margin-top:6px;}
+  .hero-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:40px;}
+  .hero-cta{display:flex;gap:12px;}
+  .btn-main{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700;padding:12px 26px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;transition:opacity .2s,transform .15s;}
+  .btn-main:hover{opacity:.88;transform:translateY(-1px);}
+  .btn-ghost{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;padding:12px 26px;border-radius:10px;background:transparent;color:var(--text);text-decoration:none;border:1px solid var(--border2);transition:all .2s;}
+  .btn-ghost:hover{background:var(--bg3);}
+  .hero-scroll{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;}
+  .hero-scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--border2),transparent);}
+  .hero-scroll-lbl{font-size:11px;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;}
+
+  /* 섹션 진입 애니메이션 */
+  .fade-up{opacity:0;transform:translateY(28px);transition:opacity .6s ease,transform .6s ease;}
+  .fade-up.visible{opacity:1;transform:translateY(0);}
+
+  /* TECH STACK */
+  .tech-cats{display:flex;gap:8px;margin-bottom:36px;flex-wrap:wrap;}
+  .tech-cat{font-size:12px;font-weight:600;padding:6px 18px;border-radius:8px;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text2);transition:all .2s;}
+  .tech-cat.on{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .tech-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;align-items:stretch;}
+  .tech-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;transition:border-color .2s,transform .2s,opacity .3s;cursor:default;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;min-height:110px;}
+  .tech-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(59,130,246,0.04),transparent);opacity:0;transition:opacity .2s;}
+  .tech-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+  .tech-card:hover::before{opacity:1;}
+  .tech-card.hidden{display:none;}
+  .tc-icon{font-size:22px;margin-bottom:12px;display:block;}
+  .tc-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;}
+  .tc-meta{font-size:12px;color:var(--text2);margin-bottom:14px;}
+  .tc-yrs{position:absolute;top:20px;right:20px;font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-dim);border-radius:6px;padding:2px 8px;}
+
+  /* PROJECTS */
+  .proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;align-items:start;}
+  .proj-card{background:var(--bg2);border:1px solid var(--border);border-radius:18px;overflow:hidden;transition:border-color .2s,transform .2s;display:flex;flex-direction:column;}
+  .proj-card:hover{border-color:var(--accent-border);transform:translateY(-3px);}
+  .proj-thumb{height:150px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+  .proj-thumb-bg{position:absolute;inset:0;}
+  .proj-thumb-label{position:relative;z-index:1;font-size:13px;font-weight:700;color:var(--text2);letter-spacing:.05em;}
+  .proj-body{padding:24px;flex:1;}
+  .proj-period{font-size:11px;color:var(--text3);margin-bottom:8px;}
+  .proj-title{font-size:16px;font-weight:800;color:var(--text);margin-bottom:8px;letter-spacing:-.3px;}
+  .proj-impact{font-size:13px;color:var(--green);background:var(--green-dim);border:1px solid rgba(16,185,129,.15);border-radius:8px;padding:7px 12px;margin-bottom:14px;}
+  .proj-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:0;}
+  /* Accordion */
+  .proj-toggle{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-top:1px solid var(--border);cursor:pointer;font-size:13px;color:var(--text2);user-select:none;transition:color .2s;}
+  .proj-toggle:hover{color:var(--text);}
+  .proj-toggle-arrow{font-size:12px;transition:transform .3s;}
+  .proj-str{overflow:hidden;max-height:0;transition:max-height .4s ease,padding .3s ease;padding:0 24px;}
+  .proj-str.open{max-height:600px;padding:18px 24px;}
+  .str-row{margin-bottom:12px;}
+  .str-lbl{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:4px;}
+  .str-txt{font-size:13px;color:var(--text2);line-height:1.65;}
+  .proj-links{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+  .proj-link{font-size:12px;font-weight:600;color:var(--text2);background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:5px 12px;text-decoration:none;transition:all .2s;}
+  .proj-link:hover{color:var(--text);border-color:var(--border2);}
+
+  /* EXPERIENCE */
+  .exp-wrap{display:grid;grid-template-columns:200px 1fr;gap:0;}
+  .exp-timeline{position:relative;padding-right:40px;}
+  .exp-timeline::after{content:'';position:absolute;right:0;top:12px;bottom:0;width:1px;background:linear-gradient(to bottom,var(--accent),var(--border) 80%);}
+  .exp-t-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);box-shadow:0 0 0 3px var(--accent-dim);position:absolute;right:-5px;top:12px;}
+  .exp-period{font-size:12px;color:var(--text3);line-height:1.5;}
+  .exp-duration{font-size:11px;font-weight:700;color:var(--accent);margin-top:4px;}
+  .exp-content{padding-left:40px;}
+  .exp-role{font-size:20px;font-weight:800;color:var(--text);letter-spacing:-.3px;margin-bottom:4px;}
+  .exp-company{font-size:14px;color:var(--text2);margin-bottom:20px;}
+  .exp-items{list-style:none;margin-bottom:20px;}
+  .exp-items li{font-size:14px;color:var(--text2);padding:6px 0 6px 20px;position:relative;border-bottom:1px solid var(--border);}
+  .exp-items li:last-child{border-bottom:none;}
+  .exp-items li::before{content:'';position:absolute;left:0;top:50%;width:8px;height:1px;background:var(--accent);}
+  .exp-tags{display:flex;flex-wrap:wrap;gap:6px;}
+
+  /* PROBLEM SOLVING */
+  .ps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+  .ps-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px;transition:border-color .2s,transform .2s;position:relative;overflow:hidden;}
+  .ps-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),#818cf8);transform:scaleX(0);transform-origin:left;transition:transform .3s;}
+  .ps-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+  .ps-card:hover::after{transform:scaleX(1);}
+  .ps-type{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);background:var(--accent-dim);border-radius:6px;padding:3px 10px;margin-bottom:14px;}
+  .ps-title{font-size:15px;font-weight:800;color:var(--text);margin-bottom:10px;line-height:1.4;letter-spacing:-.2px;}
+  .ps-summary{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:20px;}
+  .ps-footer{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text3);border-top:1px solid var(--border);padding-top:16px;}
+  .ps-more{color:var(--accent);font-weight:600;}
+
+  /* CERTIFICATIONS */
+  .cert-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;}
+  .cert-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px 24px;transition:border-color .2s;}
+  .cert-card:hover{border-color:var(--border2);}
+  .cert-icon{width:36px;height:36px;border-radius:10px;background:var(--accent-dim);border:1px solid var(--accent-border);display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:14px;}
+  .cert-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;}
+  .cert-org{font-size:12px;color:var(--text2);}
+  .cert-date{font-size:12px;font-weight:700;color:var(--accent);margin-top:8px;}
+
+  /* FOOTER */
+  #footer-global{padding:32px 0;text-align:center;font-size:12px;color:var(--text3);}
+  #footer-global span{color:var(--accent);}
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    /* Nav */
+    .nav-links{display:none;}
+    #nav-global .wrap{padding:0 20px;}
+    .nav-resume{font-size:12px;padding:6px 14px;}
+
+    /* 공통 */
+    .wrap{padding:0 20px;}
+    section{padding:72px 0;}
+    .sec-title{font-size:24px;}
+    .sec-sub{font-size:14px;margin-bottom:36px;}
+
+    /* Hero */
+    .hero-h1{font-size:clamp(32px,8vw,48px);letter-spacing:-1px;}
+    .hero-desc{font-size:15px;}
+    .hero-metrics{flex-direction:column;border-radius:12px;}
+    .metric{border-right:none;border-bottom:1px solid var(--border);padding:16px 20px;}
+    .metric:last-child{border-bottom:none;}
+    .metric-val{font-size:22px;}
+    .hero-cta{flex-direction:column;gap:10px;}
+    .btn-main,.btn-ghost{justify-content:center;}
+    .hero-scroll{display:none;}
+
+    /* Tech Stack */
+    .tech-grid{grid-template-columns:1fr 1fr;}
+    .tech-cats{gap:6px;}
+    .tech-cat{font-size:11px;padding:5px 12px;}
+
+    /* Projects */
+    .proj-grid{grid-template-columns:1fr;}
+
+    /* Experience */
+    .exp-wrap{grid-template-columns:1fr;gap:16px;}
+    .exp-timeline{padding-right:0;padding-bottom:16px;}
+    .exp-timeline::after{display:none;}
+    .exp-content{padding-left:0;}
+
+    /* Problem Solving */
+    .ps-grid{grid-template-columns:1fr;}
+
+    /* Certifications */
+    .cert-grid{grid-template-columns:1fr 1fr;}
+  }
+
+  @media (max-width: 480px) {
+    .tech-grid{grid-template-columns:1fr;}
+    .cert-grid{grid-template-columns:1fr;}
+    .hero-metrics{border-radius:10px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV — nav-global -->
+<nav id="nav-global">
+  <div class="wrap">
+    <span class="nav-logo">김동주<span>.dev</span></span>
+    <ul class="nav-links">
+      <li><a href="#techstack-main">스택</a></li>
+      <li><a href="#projects-main">프로젝트</a></li>
+      <li><a href="#experience-timeline">경력</a></li>
+      <li><a href="#problemsolving-main">문제 해결</a></li>
+      <li><a href="#certifications-main">자격증</a></li>
+    </ul>
+    <a href="resume.pdf" download="김동주_이력서.pdf" class="nav-resume">이력서 ↓</a>
+  </div>
+</nav>
+
+
+<!-- HERO — hero-main -->
+<section id="hero-main">
+  <div class="hero-noise"></div>
+  <div class="hero-grid"></div>
+  <div class="wrap hero-inner">
+    <div class="hero-avail">
+      <span class="hero-avail-dot"></span>
+      현재 새로운 기회를 탐색 중입니다
+    </div>
+    <h1 class="hero-h1">
+      <span class="tw-wrap"><span class="tw-text" id="tw-text"></span><span class="tw-cursor"></span></span><br>
+      <span class="hl">안정적인 인프라</span>를<br>만듭니다.
+    </h1>
+    <p class="hero-desc">
+      Java · Spring Boot · Apache Kafka 기반 5년차 백엔드 엔지니어.<br>
+      대용량 데이터 파이프라인 설계부터 운영 자동화까지 전 사이클 경험.
+    </p>
+
+    <div class="hero-metrics">
+      <div class="metric">
+        <div class="metric-val"><span class="counter" data-target="200" data-suffix="+">0</span></div>
+        <div class="metric-lbl">연계 테이블 수</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val"><span class="counter" data-target="0" data-suffix="%">0</span></div>
+        <div class="metric-lbl">Kafka 데이터 유실률</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val"><span class="counter" data-target="40" data-suffix="+">0</span></div>
+        <div class="metric-lbl">연계 기관 기술 협의</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val"><span class="counter" data-target="30" data-suffix="%">0</span></div>
+        <div class="metric-lbl">운영 효율성 향상</div>
+      </div>
+    </div>
+
+    <div class="hero-tags">
+      <span class="tag">Java</span>
+      <span class="tag">Spring Boot</span>
+      <span class="tag">Apache Kafka</span>
+      <span class="tag">Hadoop · HDFS · YARN</span>
+      <span class="tag">Quartz Scheduler</span>
+      <span class="tag">InfluxDB</span>
+      <span class="tag">Oracle · Tibero · MySQL</span>
+      <span class="tag">React</span>
+      <span class="tag">JPA</span>
+    </div>
+
+    <div class="hero-cta">
+      <a href="resume.pdf" download="김동주_이력서.pdf" class="btn-main">이력서 다운로드 ↓</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="hero-scroll-line"></div>
+    <span class="hero-scroll-lbl">scroll</span>
+  </div>
+</section>
+
+
+<!-- TECH STACK — techstack-main -->
+<section id="techstack-main">
+  <div class="wrap">
+    <div class="sec-chip fade-up">Tech Stack</div>
+    <h2 class="sec-title fade-up">기술 스택</h2>
+    <p class="sec-sub fade-up">5년간 프로덕션에서 직접 운영한 기술들입니다.</p>
+
+    <div class="tech-cats fade-up">
+      <button class="tech-cat on" data-cat="all">전체</button>
+      <button class="tech-cat" data-cat="backend">Backend</button>
+      <button class="tech-cat" data-cat="data">Data &amp; Infra</button>
+      <button class="tech-cat" data-cat="db">Database</button>
+      <button class="tech-cat" data-cat="frontend">Frontend</button>
+    </div>
+
+    <div class="tech-grid">
+      <div class="tech-card fade-up" data-cat="backend">
+        <span class="tc-yrs">5년</span>
+        <span class="tc-icon">☕</span>
+        <div class="tc-name">Java</div>
+        <div class="tc-meta">데이터 파이프라인 전반</div>
+      </div>
+      <div class="tech-card fade-up" data-cat="backend">
+        <span class="tc-yrs">5년</span>
+        <span class="tc-icon">🌱</span>
+        <div class="tc-name">Spring Boot</div>
+        <div class="tc-meta">REST API · 배치 시스템 구축</div>
+      </div>
+      <div class="tech-card fade-up" data-cat="backend">
+        <span class="tc-yrs">3년</span>
+        <span class="tc-icon">⏱</span>
+        <div class="tc-name">Quartz Scheduler</div>
+        <div class="tc-meta">자동화 배치 · 무결성 검증</div>
+      </div>
+      <div class="tech-card fade-up" data-cat="backend">
+        <span class="tc-yrs">3년</span>
+        <span class="tc-icon">🔗</span>
+        <div class="tc-name">JPA</div>
+        <div class="tc-meta">ORM 기반 도메인 설계</div>
+      </div>
+      <div class="tech-card fade-up" data-cat="backend">
+        <span class="tc-yrs">3년</span>
+        <span class="tc-icon">🗺</span>
+        <div class="tc-name">MyBatis</div>
+        <div class="tc-meta">SQL 매핑 · 동적 쿼리 최적화</div>
+      </div>
+      <div class="tech-card fade-up" data-cat="data">
+        <span class="tc-yrs">4년</span>
+        <span class="tc-icon">⚡</span>
+        <div class="tc-name">Apache Kafka</div>
+        <div class="tc-meta">대용량 수집 에이전트 · 유실률 0%</div>
+      </div>
+      <div class="tech-card fade-up" data-cat="data">
+        <span class="tc-yrs">2년</span>
+        <span class="tc-icon">🐘</span>
+        <div class="tc-name">Hadoop · HDFS · YARN</div>
+        <div class="tc-meta">클러스터 운영 · 파티션 관리</div>
+      </div>
+      <div class="tech-card fade-up" data-cat="data">
+        <span class="tc-yrs">2년</span>
+        <span class="tc-icon">📈</span>
+        <div class="tc-name">InfluxDB · Zookeeper</div>
+        <div class="tc-meta">시계열 모니터링 · 분산 코디네이션</div>
+      </div>
+      <div class="tech-card fade-up" data-cat="data">
+        <span class="tc-yrs">1년</span>
+        <span class="tc-icon">🔀</span>
+        <div class="tc-name">Apache Camel</div>
+        <div class="tc-meta">서버 간 메시지 라우팅</div>
+      </div>
+      <div class="tech-card fade-up" data-cat="db">
+        <span class="tc-yrs">5년</span>
+        <span class="tc-icon">🗄</span>
+        <div class="tc-name">Oracle · Tibero</div>
+        <div class="tc-meta">파티션 설계 · 쿼리 최적화</div>
+      </div>
+      <div class="tech-card fade-up" data-cat="db">
+        <span class="tc-yrs">3년</span>
+        <span class="tc-icon">🐬</span>
+        <div class="tc-name">MySQL</div>
+        <div class="tc-meta">운영 DB 설계 · 인덱스 최적화</div>
+      </div>
+      <div class="tech-card fade-up" data-cat="db">
+        <span class="tc-yrs">1년</span>
+        <span class="tc-icon">🟦</span>
+        <div class="tc-name">Cubrid</div>
+        <div class="tc-meta">공공 시스템 DB 운영 · 쿼리 튜닝</div>
+      </div>
+      <div class="tech-card fade-up" data-cat="frontend">
+        <span class="tc-yrs">2년</span>
+        <span class="tc-icon">⚛</span>
+        <div class="tc-name">React</div>
+        <div class="tc-meta">운영 대시보드 · 히트맵 구현</div>
+      </div>
+      <div class="tech-card fade-up" data-cat="frontend">
+        <span class="tc-yrs">3년</span>
+        <span class="tc-icon">🌐</span>
+        <div class="tc-name">JavaScript</div>
+        <div class="tc-meta">UI 인터랙션 · 모니터링 위젯</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- PROJECTS — projects-main -->
+<section id="projects-main">
+  <div class="wrap">
+    <div class="sec-chip fade-up">Projects</div>
+    <h2 class="sec-title fade-up">프로젝트</h2>
+    <p class="sec-sub fade-up">5년간 참여한 공공 데이터 인프라 구축 사례입니다.</p>
+
+    <div class="proj-grid">
+
+      <div class="proj-card fade-up">
+        <div class="proj-thumb">
+          <div class="proj-thumb-bg" style="background:linear-gradient(135deg,#0a1628,#0d2040);"></div>
+          <span class="proj-thumb-label">✈ 항공교통데이터</span>
+        </div>
+        <div class="proj-body">
+          <div class="proj-period">2023.04 — 2025.01</div>
+          <div class="proj-title">항공교통데이터 4·5차 구축</div>
+          <div class="proj-impact">↑ 운영 효율성 30% 향상 · 장애 조기 감지 체계 구축</div>
+          <div class="proj-tags">
+            <span class="tag">Java</span><span class="tag">Spring Boot</span><span class="tag">Kafka</span><span class="tag">Hadoop</span><span class="tag">InfluxDB</span><span class="tag">React</span>
+          </div>
+        </div>
+        <div class="proj-toggle" onclick="toggleStr(this)">
+          <span>문제 해결 과정 보기</span>
+          <span class="proj-toggle-arrow">▼</span>
+        </div>
+        <div class="proj-str">
+          <div class="str-row">
+            <div class="str-lbl">Situation</div>
+            <div class="str-txt">하둡 클러스터 전체 노드 상태를 개별 접속으로 파악하다 보니 장애 감지가 지연되는 구조적 문제가 있었습니다.</div>
+          </div>
+          <div class="str-row">
+            <div class="str-lbl">Task</div>
+            <div class="str-txt">HDFS · YARN · Zookeeper 가동 현황과 리소스 용량을 실시간 모니터링하고 임계치 초과 시 자동 알림 시스템이 필요했습니다.</div>
+          </div>
+          <div class="str-row">
+            <div class="str-lbl">Resolution</div>
+            <div class="str-txt">Hadoop JMX 메트릭을 InfluxDB에 수집하고 React 대시보드 + 히트맵으로 시각화. Quartz로 컴포넌트별 임계치 알림 주기를 자동화해 팀 일일 점검 시간을 30% 단축했습니다.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="proj-card fade-up">
+        <div class="proj-thumb">
+          <div class="proj-thumb-bg" style="background:linear-gradient(135deg,#0d1a10,#0a2010);"></div>
+          <span class="proj-thumb-label">🗂 국가기준데이터 5차</span>
+        </div>
+        <div class="proj-body">
+          <div class="proj-period">2022.05 — 2023.03</div>
+          <div class="proj-title">국가기준데이터 관리체계 5차</div>
+          <div class="proj-impact">↑ 200개 테이블 연계 · 40개 기관 기술 협의 완료</div>
+          <div class="proj-tags">
+            <span class="tag">Java</span><span class="tag">Spring Boot</span><span class="tag">Kafka</span><span class="tag">Tibero</span><span class="tag">Oracle</span>
+          </div>
+        </div>
+        <div class="proj-toggle" onclick="toggleStr(this)">
+          <span>문제 해결 과정 보기</span>
+          <span class="proj-toggle-arrow">▼</span>
+        </div>
+        <div class="proj-str">
+          <div class="str-row">
+            <div class="str-lbl">Situation</div>
+            <div class="str-txt">40여 개 기관의 인코딩 방식·파일 포맷·구분자 요구를 모두 수용하자 분기 처리 과다로 유지보수 병목이 발생했습니다.</div>
+          </div>
+          <div class="str-row">
+            <div class="str-lbl">Task</div>
+            <div class="str-txt">시스템 복잡도를 낮추면서도 40개 이상 기관의 연계 요구사항을 수용하는 구조가 필요했습니다.</div>
+          </div>
+          <div class="str-row">
+            <div class="str-lbl">Resolution</div>
+            <div class="str-txt">내부 PL에게 운영 리스크를 데이터 기반으로 보고해 표준화 방향성을 승인받은 후, 기관별 설명회와 개별 소통으로 표준 연계 가이드라인 도입을 이끌어냈습니다. 200개 테이블 연계 안정성 확보.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="proj-card fade-up">
+        <div class="proj-thumb">
+          <div class="proj-thumb-bg" style="background:linear-gradient(135deg,#1a0d28,#200a20);"></div>
+          <span class="proj-thumb-label">⚙ 자동화 · 무결성</span>
+        </div>
+        <div class="proj-body">
+          <div class="proj-period">2021.05 — 2022.03</div>
+          <div class="proj-title">국가기준데이터 관리체계 4차</div>
+          <div class="proj-impact">↑ 스토리지 20% 자동 확보 · 데이터 유실률 0% 달성</div>
+          <div class="proj-tags">
+            <span class="tag">Java</span><span class="tag">Kafka</span><span class="tag">Quartz</span><span class="tag">Tibero</span>
+          </div>
+        </div>
+        <div class="proj-toggle" onclick="toggleStr(this)">
+          <span>문제 해결 과정 보기</span>
+          <span class="proj-toggle-arrow">▼</span>
+        </div>
+        <div class="proj-str">
+          <div class="str-row">
+            <div class="str-lbl">Situation</div>
+            <div class="str-txt">파티션 테이블 누적으로 스토리지가 지속 부족해지고, 데이터 무결성 검증이 수동으로 이루어져 운영 비효율이 발생했습니다.</div>
+          </div>
+          <div class="str-row">
+            <div class="str-lbl">Task</div>
+            <div class="str-txt">스토리지 자동 확보와 운영-이력 테이블 간 데이터 건수 교차 검증 자동화가 필요했습니다.</div>
+          </div>
+          <div class="str-row">
+            <div class="str-lbl">Resolution</div>
+            <div class="str-txt">Quartz로 Truncate 프로세스를 자동화해 스페이스 20% 확보. 교차 검증 로직과 Kafka 수집으로 유실률 0%를 달성했습니다.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="proj-card fade-up">
+        <div class="proj-thumb">
+          <div class="proj-thumb-bg" style="background:linear-gradient(135deg,#1a1000,#201500);"></div>
+          <span class="proj-thumb-label">🖥 분산 서버 제어</span>
+        </div>
+        <div class="proj-body">
+          <div class="proj-period">2020.09 — 2021.03</div>
+          <div class="proj-title">국가기준데이터 관리체계 3차</div>
+          <div class="proj-impact">↑ 분산 서버 중앙 제어 구축 · 이상 징후 조기 감지 가능</div>
+          <div class="proj-tags">
+            <span class="tag">Java</span><span class="tag">Spring Boot</span><span class="tag">Apache Camel</span><span class="tag">Quartz</span><span class="tag">Cubrid</span>
+          </div>
+        </div>
+        <div class="proj-toggle" onclick="toggleStr(this)">
+          <span>문제 해결 과정 보기</span>
+          <span class="proj-toggle-arrow">▼</span>
+        </div>
+        <div class="proj-str">
+          <div class="str-row">
+            <div class="str-lbl">Situation</div>
+            <div class="str-txt">분산 서버를 개별 접속으로 관리하다 보니 시각 동기화 불일치와 프로세스 현황 파악에 어려움이 있었습니다.</div>
+          </div>
+          <div class="str-row">
+            <div class="str-lbl">Task</div>
+            <div class="str-txt">모든 서버를 단일 인터페이스에서 제어하고 실시간 모니터링하는 중앙 제어 시스템이 필요했습니다.</div>
+          </div>
+          <div class="str-row">
+            <div class="str-lbl">Resolution</div>
+            <div class="str-txt">Apache Camel로 서버 간 메시지 라우팅 레이어를 구성하고, Quartz로 분산 서버의 시각 동기화 및 프로세스 현황을 실시간 모니터링하는 중앙 제어 인터페이스를 개발했습니다.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- EXPERIENCE — experience-timeline -->
+<section id="experience-timeline">
+  <div class="wrap">
+    <div class="sec-chip fade-up">Experience</div>
+    <h2 class="sec-title fade-up">경력</h2>
+    <p class="sec-sub fade-up">단일 도메인에서 5년간 깊이 있는 전문성을 쌓았습니다.</p>
+
+    <div class="exp-wrap fade-up">
+      <div class="exp-timeline">
+        <div class="exp-t-dot"></div>
+        <div class="exp-period">2020.06<br>— 현재</div>
+        <div class="exp-duration">약 5년</div>
+      </div>
+      <div class="exp-content">
+        <div class="exp-role">백엔드 / 풀스택 개발자</div>
+        <div class="exp-company">(주)브이티더블유 · 공공 데이터 인프라</div>
+        <ul class="exp-items">
+          <li>Apache Kafka를 활용한 200여 개 테이블 대용량 데이터 연계 파이프라인 구축</li>
+          <li>Quartz Scheduler + 파티션 테이블 자동화로 테이블 스페이스 20% 확보</li>
+          <li>40여 개 이용기관 기술 협의 및 표준 연계 가이드라인 수립으로 시스템 단순화</li>
+          <li>Hadoop JMX 메트릭 기반 대시보드·히트맵·자동 알림 시스템 개발 (효율 30% 향상)</li>
+          <li>Kafka 기반 데이터 수집으로 데이터 유실률 0% 유지</li>
+        </ul>
+        <div class="exp-tags">
+          <span class="tag">Java</span><span class="tag">Spring Boot</span><span class="tag">Kafka</span>
+          <span class="tag">Hadoop</span><span class="tag">Quartz</span><span class="tag">InfluxDB</span>
+          <span class="tag">React</span><span class="tag">Oracle · Tibero</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- PROBLEM SOLVING — problemsolving-main -->
+<section id="problemsolving-main">
+  <div class="wrap">
+    <div class="sec-chip fade-up">Problem Solving</div>
+    <h2 class="sec-title fade-up">문제 해결 로그</h2>
+    <p class="sec-sub fade-up">기술 선택의 이유와 트레이드오프를 기록합니다.</p>
+
+    <div class="ps-grid">
+      <div class="ps-card fade-up">
+        <span class="ps-type">아키텍처 설계</span>
+        <div class="ps-title">40개 기관의 커스터마이징 요구를 표준화로 해결한 과정</div>
+        <div class="ps-summary">인코딩·파일 포맷·구분자가 제각각인 요구를 모두 수용하자 분기 처리 과다로 유지보수 병목이 발생했습니다. 운영 리스크를 데이터 기반으로 보고해 내부 승인을 얻은 뒤, 기관별 설명회로 표준 가이드라인 도입을 이끌어냈습니다.</div>
+        <div class="ps-footer">
+          <span>표준화 · 설득 · 설계</span>
+        </div>
+      </div>
+      <div class="ps-card fade-up">
+        <span class="ps-type">성능 최적화</span>
+        <div class="ps-title">Hadoop JMX 메트릭으로 운영 점검 시간을 30% 단축한 방법</div>
+        <div class="ps-summary">로그를 일일이 확인하던 기존 방식으로는 장애 징후를 즉각 인지하기 어려웠습니다. JMX 메트릭 수집 → 컴포넌트 상태 시각화 → 노드별 히트맵 구현으로 일일 점검 루틴을 대체했습니다.</div>
+        <div class="ps-footer">
+          <span>모니터링 · React · InfluxDB</span>
+        </div>
+      </div>
+      <div class="ps-card fade-up">
+        <span class="ps-type">데이터 정합성</span>
+        <div class="ps-title">CDC + Kafka 파이프라인에서 추출·적재 로직을 최적화한 경험</div>
+        <div class="ps-summary">CDC와 Kafka 기반 실시간 스트리밍 파이프라인 내 병목 지점을 파악하고, 40여 개 기관 요구사항을 Spring Boot 전송 프로세스에 정교하게 반영해 현장 안정성을 확보했습니다.</div>
+        <div class="ps-footer">
+          <span>Kafka · Spring Boot · CDC</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- CERTIFICATIONS — certifications-main -->
+<section id="certifications-main">
+  <div class="wrap">
+    <div class="sec-chip fade-up">Certifications</div>
+    <h2 class="sec-title fade-up">자격증 및 학력</h2>
+    <p class="sec-sub fade-up">데이터 엔지니어링 역량을 공식 자격으로 검증했습니다.</p>
+
+    <div class="cert-grid">
+      <div class="cert-card fade-up">
+        <div class="cert-icon">📊</div>
+        <div class="cert-name">데이터분석준전문가 (ADSP)</div>
+        <div class="cert-org">한국데이터산업진흥원</div>
+        <div class="cert-date">2026.03</div>
+      </div>
+      <div class="cert-card fade-up">
+        <div class="cert-icon">🗃</div>
+        <div class="cert-name">SQLD</div>
+        <div class="cert-org">한국데이터산업진흥원</div>
+        <div class="cert-date">2019.12</div>
+      </div>
+      <div class="cert-card fade-up">
+        <div class="cert-icon">🏅</div>
+        <div class="cert-name">정보처리기사</div>
+        <div class="cert-org">한국산업인력공단</div>
+        <div class="cert-date">2016.05</div>
+      </div>
+      <div class="cert-card fade-up">
+        <div class="cert-icon">🎓</div>
+        <div class="cert-name">컴퓨터공학과 학사</div>
+        <div class="cert-org">상지대학교 · 학점 3.43/4.5</div>
+        <div class="cert-date">2017.08 졸업</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- FOOTER — footer-global -->
+<footer id="footer-global">
+  <div class="wrap">
+    © 2026 <span>김동주</span> · 포트폴리오 · <a href="mailto:djkim1216@naver.com" style="color:var(--accent);text-decoration:none;">djkim1216@naver.com</a>
+  </div>
+</footer>
+
+<script>
+/* ── 1. Nav: 스크롤 시 shadow + active 링크 ── */
+const nav = document.getElementById('nav-global');
+const navLinks = document.querySelectorAll('.nav-links a');
+const sections = document.querySelectorAll('section[id]');
+
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 40);
+  let cur = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+  navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+}, {passive: true});
+
+/* ── 2. Typewriter 효과 ── */
+const phrases = ['데이터가 흐르는 곳에', '안정적인 파이프라인을', '신뢰할 수 있는 시스템을'];
+let pi = 0, ci = 0, deleting = false;
+const twEl = document.getElementById('tw-text');
+
+function typewrite() {
+  const word = phrases[pi];
+  if (!deleting) {
+    twEl.textContent = word.slice(0, ++ci);
+    if (ci === word.length) { deleting = true; setTimeout(typewrite, 1800); return; }
+  } else {
+    twEl.textContent = word.slice(0, --ci);
+    if (ci === 0) { deleting = false; pi = (pi + 1) % phrases.length; }
+  }
+  setTimeout(typewrite, deleting ? 55 : 90);
+}
+typewrite();
+
+/* ── 3. Intersection Observer: fade-up + 카운터 ── */
+const countersDone = new Set();
+
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const el = entry.target;
+
+    /* fade-up */
+    el.classList.add('visible');
+
+    /* 카운터 (hero 섹션 수치) */
+    el.querySelectorAll('.counter').forEach(c => {
+      if (countersDone.has(c)) return;
+      countersDone.add(c);
+      const target = +c.dataset.target;
+      const suffix = c.dataset.suffix || '';
+      const dur = 1400;
+      const start = performance.now();
+      function tick(now) {
+        const p = Math.min((now - start) / dur, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        c.textContent = Math.round(target * ease) + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    });
+
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.fade-up, #hero-main').forEach(el => io.observe(el));
+
+/* ── 4. 프로젝트 카드 Accordion ── */
+function toggleStr(toggle) {
+  const str = toggle.nextElementSibling;
+  const isOpen = str.classList.contains('open');
+
+  /* 열려있는 다른 카드 모두 닫기 */
+  document.querySelectorAll('.proj-str.open').forEach(s => {
+    s.classList.remove('open');
+    const t = s.previousElementSibling;
+    t.querySelector('.proj-toggle-arrow').style.transform = 'rotate(0deg)';
+    t.querySelector('span:first-child').textContent = '문제 해결 과정 보기';
+  });
+
+  /* 클릭한 카드 토글 */
+  if (!isOpen) {
+    str.classList.add('open');
+    toggle.querySelector('.proj-toggle-arrow').style.transform = 'rotate(180deg)';
+    toggle.querySelector('span:first-child').textContent = '접기';
+  }
+}
+
+/* ── 5. Tech Stack 탭 전환 ── */
+document.querySelectorAll('.tech-cat').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tech-cat').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    const cat = btn.dataset.cat;
+    document.querySelectorAll('.tech-card').forEach(card => {
+      const show = cat === 'all' || card.dataset.cat === cat;
+      card.classList.toggle('hidden', !show);
+    });
+  });
+});
+</script>
+</body>
+</html>
